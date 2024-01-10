@@ -42,6 +42,7 @@ export default class AddTutorial extends Component<Props, State> {
       title: this.state.title,
       description: this.state.description
     };
+    // console.log(data)
 
     TutorialDataService.create(data)
       .then((response: any) => {
