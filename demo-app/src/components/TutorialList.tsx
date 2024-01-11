@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Component } from "react";
+import React, { Component } from "react";
 import ApiService from "../services/tutorial.service";
 import ITutorialData from '../types/tutorial.type';
 
@@ -7,8 +7,7 @@ type Props = {};
 type State = {
   tutorials: Array<ITutorialData>,
   currentTutorial: ITutorialData | null,
-  currentIndex: number,
-  searchTitle: string
+  currentIndex: number
 };
 
 class TutorialList extends Component<Props, State> {
@@ -17,42 +16,27 @@ class TutorialList extends Component<Props, State> {
     this.state = {
       tutorials: [],
       currentTutorial: null,
-      currentIndex: -1,
-      searchTitle: ""
+      currentIndex: -1
     };
   }
 
   componentDidMount() {
-    this.retrieveTutorials();
+    this.showAllTutorials();
   }
 
-  onChangeSearchTitle = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      searchTitle: e.target.value
-    });
-  }
-
-  async retrieveTutorials() {
+  async showAllTutorials() {
     try {
       const tutorials = await ApiService.getAllTutorials();
-      this.setState({
-        tutorials: tutorials,
-      });
+
+      if (Array.isArray(tutorials)) {
+        this.setState({
+          tutorials: tutorials,
+        });
+      } else {
+        console.error("Error: Retrieved data is not an array");
+      }
     } catch (error) {
       console.error("Error retrieving tutorials:", error);
-    }
-  }
-
-  refreshList = async () => {
-    try {
-      await ApiService.deleteAllTutorials();
-      this.retrieveTutorials();
-      this.setState({
-        currentTutorial: null,
-        currentIndex: -1
-      });
-    } catch (error) {
-      console.error("Error deleting all tutorials:", error);
     }
   }
 
@@ -63,23 +47,28 @@ class TutorialList extends Component<Props, State> {
     });
   }
 
-  searchTitle = async () => {
-    try {
-      const tutorials = await ApiService.findByTitle(this.state.searchTitle);
-      this.setState({
-        tutorials: tutorials,
-      });
-    } catch (error) {
-      console.error("Error searching tutorials by title:", error);
-    }
-  }
-
   render() {
-    const { searchTitle, tutorials, currentTutorial, currentIndex } = this.state;
+    const { tutorials, currentTutorial, currentIndex } = this.state;
 
     return (
       <div className="list row">
-        {/* ... existing code ... */}
+        <div className="col-md-6">
+          <h4>Tutorials List</h4>
+          <ul className="list-group">
+            {tutorials.map((tutorial: ITutorialData, index: number) => (
+              <li
+                className={
+                  "list-group-item " +
+                  (index === currentIndex ? "active" : "")
+                }
+                onClick={() => this.setActiveTutorial(tutorial, index)}
+                key={index}
+              >
+                {tutorial.title}
+              </li>
+            ))}
+          </ul>
+        </div>
         <div className="col-md-6">
           {currentTutorial ? (
             <div>
@@ -96,13 +85,6 @@ class TutorialList extends Component<Props, State> {
                 </label>{" "}
                 {currentTutorial.description}
               </div>
-              {/* <div>
-                <label>
-                  <strong>Status:</strong>
-                </label>{" "}
-                {currentTutorial.published ? "Published" : "Pending"}
-              </div> */}
-              {/* ... existing code ... */}
             </div>
           ) : (
             <div>

@@ -6,7 +6,7 @@ const API_BASE_URL = 'http://localhost:3000'; // Set your Rails API base URL her
 const ApiService = {
   getAllTutorials: async (): Promise<Array<ITutorialData>> => {
     try {
-      const response = await axios.get<Array<ITutorialData>>(`${API_BASE_URL}/tutorials`, { withCredentials: true });
+      const response = await axios.get<Array<ITutorialData>>(`${API_BASE_URL}/users`, { withCredentials: true });
       return response.data;
     } catch (error) {
       console.error('Error fetching tutorials:', error);
@@ -16,7 +16,7 @@ const ApiService = {
 
   getTutorialById: async (id: string): Promise<ITutorialData> => {
     try {
-      const response = await axios.get<ITutorialData>(`${API_BASE_URL}/tutorials/${id}`, { withCredentials: true });
+      const response = await axios.get<ITutorialData>(`${API_BASE_URL}/users/${id}`, { withCredentials: true });
       return response.data;
     } catch (error) {
       console.error(`Error fetching tutorial with ID ${id}:`, error);
@@ -36,7 +36,7 @@ const ApiService = {
 
   updateTutorial: async (id: string, data: ITutorialData): Promise<void> => {
     try {
-      await axios.put(`${API_BASE_URL}/tutorials/${id}`, data, { withCredentials: true });
+      await axios.put(`${API_BASE_URL}/users/${id}`, data, { withCredentials: true });
     } catch (error) {
       console.error(`Error updating tutorial with ID ${id}:`, error);
       throw error;
@@ -45,7 +45,7 @@ const ApiService = {
 
   deleteTutorial: async (id: string): Promise<void> => {
     try {
-      await axios.delete(`${API_BASE_URL}/tutorials/${id}`, { withCredentials: true });
+      await axios.delete(`${API_BASE_URL}/users/${id}`, { withCredentials: true });
     } catch (error) {
       console.error(`Error deleting tutorial with ID ${id}:`, error);
       throw error;
@@ -54,7 +54,7 @@ const ApiService = {
 
   deleteAllTutorials: async (): Promise<void> => {
     try {
-      await axios.delete(`${API_BASE_URL}/tutorials`, { withCredentials: true });
+      await axios.delete(`${API_BASE_URL}/users`, { withCredentials: true });
     } catch (error) {
       console.error('Error deleting all tutorials:', error);
       throw error;
@@ -63,7 +63,7 @@ const ApiService = {
 
   findByTitle: async (title: string): Promise<Array<ITutorialData>> => {
     try {
-      const response = await axios.get<Array<ITutorialData>>(`${API_BASE_URL}/tutorials?title=${title}`, { withCredentials: true });
+      const response = await axios.get<Array<ITutorialData>>(`${API_BASE_URL}/users?title=${title}`, { withCredentials: true });
       return response.data;
     } catch (error) {
       console.error(`Error fetching tutorials with title ${title}:`, error);
