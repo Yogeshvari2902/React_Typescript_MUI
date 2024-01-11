@@ -65,11 +65,12 @@ class TutorialList extends Component<Props, State> {
                 key={index}
               >
                 {tutorial.title}
+                {/* <button>Delete</button> */}
               </li>
             ))}
           </ul>
         </div>
-        <div className="col-md-6">
+        {/* <div className="col-md-6">
           {currentTutorial ? (
             <div>
               <h4>Tutorial</h4>
@@ -86,13 +87,15 @@ class TutorialList extends Component<Props, State> {
                 {currentTutorial.description}
               </div>
             </div>
-          ) : (
+          ) 
+          : (
             <div>
               <br />
               <p>Please click on a Tutorial...</p>
             </div>
-          )}
-        </div>
+          )
+          }
+        </div> */}
       </div>
     );
   }
