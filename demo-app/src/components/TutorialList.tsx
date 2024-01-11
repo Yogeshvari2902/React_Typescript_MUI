@@ -1,6 +1,5 @@
-import { Component, ChangeEvent } from "react";
-import TutorialDataService from "../services/tutorial.service";
-import { Link } from "react-router-dom";
+import React, { ChangeEvent, Component } from "react";
+import ApiService from "../services/tutorial.service";
 import ITutorialData from '../types/tutorial.type';
 
 type Props = {};
@@ -12,16 +11,9 @@ type State = {
   searchTitle: string
 };
 
-export default class TutorialList extends Component<Props, State>{
+class TutorialList extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.onChangeSearchTitle = this.onChangeSearchTitle.bind(this);
-    this.retrieveTutorials = this.retrieveTutorials.bind(this);
-    this.refreshList = this.refreshList.bind(this);
-    this.setActiveTutorial = this.setActiveTutorial.bind(this);
-    this.removeAllTutorials = this.removeAllTutorials.bind(this);
-    this.searchTitle = this.searchTitle.bind(this);
-
     this.state = {
       tutorials: [],
       currentTutorial: null,
@@ -34,69 +26,52 @@ export default class TutorialList extends Component<Props, State>{
     this.retrieveTutorials();
   }
 
-  onChangeSearchTitle(e: ChangeEvent<HTMLInputElement>) {
-    const searchTitle = e.target.value;
-
+  onChangeSearchTitle = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      searchTitle: searchTitle
+      searchTitle: e.target.value
     });
   }
 
-  retrieveTutorials() {
-    TutorialDataService.getAll()
-      .then((response: any) => {
-        this.setState({
-          tutorials: response.data
-        });
-        console.log(response.data);
-      })
-      .catch((e: Error) => {
-        console.log(e);
+  async retrieveTutorials() {
+    try {
+      const tutorials = await ApiService.getAllTutorials();
+      this.setState({
+        tutorials: tutorials,
       });
+    } catch (error) {
+      console.error("Error retrieving tutorials:", error);
+    }
   }
 
-  refreshList() {
-    this.retrieveTutorials();
-    this.setState({
-      currentTutorial: null,
-      currentIndex: -1
-    });
+  refreshList = async () => {
+    try {
+      await ApiService.deleteAllTutorials();
+      this.retrieveTutorials();
+      this.setState({
+        currentTutorial: null,
+        currentIndex: -1
+      });
+    } catch (error) {
+      console.error("Error deleting all tutorials:", error);
+    }
   }
 
-  setActiveTutorial(tutorial: ITutorialData, index: number) {
+  setActiveTutorial = (tutorial: ITutorialData, index: number) => {
     this.setState({
       currentTutorial: tutorial,
       currentIndex: index
     });
   }
 
-  removeAllTutorials() {
-    TutorialDataService.deleteAll()
-      .then((response: any) => {
-        console.log(response.data);
-        this.refreshList();
-      })
-      .catch((e: Error) => {
-        console.log(e);
+  searchTitle = async () => {
+    try {
+      const tutorials = await ApiService.findByTitle(this.state.searchTitle);
+      this.setState({
+        tutorials: tutorials,
       });
-  }
-
-  searchTitle() {
-    this.setState({
-      currentTutorial: null,
-      currentIndex: -1
-    });
-
-    TutorialDataService.findByTitle(this.state.searchTitle)
-      .then((response: any) => {
-        this.setState({
-          tutorials: response.data
-        });
-        console.log(response.data);
-      })
-      .catch((e: Error) => {
-        console.log(e);
-      });
+    } catch (error) {
+      console.error("Error searching tutorials by title:", error);
+    }
   }
 
   render() {
@@ -104,52 +79,7 @@ export default class TutorialList extends Component<Props, State>{
 
     return (
       <div className="list row">
-        <div className="col-md-8">
-          <div className="input-group mb-3">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search by title"
-              value={searchTitle}
-              onChange={this.onChangeSearchTitle}
-            />
-            <div className="input-group-append">
-              <button
-                className="btn btn-outline-secondary"
-                type="button"
-                onClick={this.searchTitle}
-              >
-                Search
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="col-md-6">
-          <h4>Tutorials List</h4>
-
-          <ul className="list-group">
-            {tutorials &&
-              tutorials.map((tutorial: ITutorialData, index: number) => (
-                <li
-                  className={
-                    "list-group-item " +
-                    (index === currentIndex ? "active" : "")
-                  }
-                  onClick={() => this.setActiveTutorial(tutorial, index)}
-                  key={index}
-                >
-                  {tutorial.title}
-                </li>
-              ))}
-          </ul>
-
-          <button
-            className="m-3 btn btn-sm btn-danger"
-            onClick={this.removeAllTutorials}
-          >
-            Remove All
-          </button>
-        </div>
+        {/* ... existing code ... */}
         <div className="col-md-6">
           {currentTutorial ? (
             <div>
@@ -166,19 +96,13 @@ export default class TutorialList extends Component<Props, State>{
                 </label>{" "}
                 {currentTutorial.description}
               </div>
-              <div>
+              {/* <div>
                 <label>
                   <strong>Status:</strong>
                 </label>{" "}
                 {currentTutorial.published ? "Published" : "Pending"}
-              </div>
-
-              <Link
-                to={"/tutorials/" + currentTutorial.id}
-                className="badge badge-warning"
-              >
-                Edit
-              </Link>
+              </div> */}
+              {/* ... existing code ... */}
             </div>
           ) : (
             <div>
@@ -191,3 +115,5 @@ export default class TutorialList extends Component<Props, State>{
     );
   }
 }
+
+export default TutorialList;

@@ -1,6 +1,5 @@
-import { Component, ChangeEvent } from "react";
-
-import TutorialDataService from "../services/tutorial.service";
+import React, { ChangeEvent, Component } from "react";
+import ApiService from "../services/tutorial.service";
 import ITutorialData from "../types/tutorial.type";
 
 interface Props {
@@ -12,7 +11,7 @@ interface State {
   message: string;
 }
 
-export default class Tutorial extends Component<Props, State> {
+class Tutorial extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -20,7 +19,7 @@ export default class Tutorial extends Component<Props, State> {
         id: "",
         title: "",
         description: "",
-        published: false,
+        // published: false,
       },
       message: "",
     };
@@ -60,87 +59,66 @@ export default class Tutorial extends Component<Props, State> {
     const { id } = this.props;
 
     if (id) {
-      TutorialDataService.get(id)
-        .then((response: any) => {
+      ApiService.getTutorialById(id)
+        .then((response: ITutorialData) => {
           this.setState({
-            currentTutorial: response.data,
+            currentTutorial: response,
           });
-          console.log(response.data);
+          console.log(response);
         })
-        .catch((e: Error) => {
-          console.log(e);
+        .catch((error) => {
+          console.error(`Error fetching tutorial with ID ${id}:`, error);
         });
     } else {
       console.log("No ID parameter provided");
-      // Handle the case when no ID parameter is provided in the route
     }
   }
 
+  updatePublished(status: boolean) {
+    const { currentTutorial } = this.state;
 
+    const updatedTutorial: ITutorialData = {
+      ...currentTutorial
+      // published: status,
+    };
 
- updatePublished(status: boolean) {
-  const { currentTutorial } = this.state;
-
-
-  const data: ITutorialData = {
-    id: currentTutorial.id,
-    title: currentTutorial.title,
-    description: currentTutorial.description,
-    published: status,
-  };
-
-
-  TutorialDataService.update(data, currentTutorial.id)
-    .then((response: any) => {
-      this.setState(prevState => ({
-        currentTutorial: {
-          ...prevState.currentTutorial,
-          published: status,
-        },
-        message: "The status was updated successfully!",
-      }));
-      console.log(response.data);
-    })
-    .catch((e: Error) => {
-      console.log(e);
-    });
-}
-
-
-updateTutorial() {
-  const { currentTutorial } = this.state;
-
-
-  TutorialDataService.update(
-    currentTutorial,
-    currentTutorial.id
-  )
-    .then((response: any) => {
-      console.log(response.data);
-      this.setState({
-        message: "The tutorial was updated successfully!",
+    ApiService.updateTutorial(currentTutorial.id, updatedTutorial)
+      .then(() => {
+        this.setState({
+          currentTutorial: updatedTutorial,
+          message: "The status was updated successfully!",
+        });
+      })
+      .catch((error) => {
+        console.error(`Error updating tutorial with ID ${currentTutorial.id}:`, error);
       });
-    })
-    .catch((e: Error) => {
-      console.log(e);
-    });
-}
+  }
 
+  updateTutorial() {
+    const { currentTutorial } = this.state;
 
-deleteTutorial() {
-  const { currentTutorial } = this.state;
+    ApiService.updateTutorial(currentTutorial.id, currentTutorial)
+      .then(() => {
+        this.setState({
+          message: "The tutorial was updated successfully!",
+        });
+      })
+      .catch((error) => {
+        console.error(`Error updating tutorial with ID ${currentTutorial.id}:`, error);
+      });
+  }
 
+  deleteTutorial() {
+    const { currentTutorial } = this.state;
 
-  TutorialDataService.delete(currentTutorial.id)
-    .then((response: any) => {
-      console.log(response.data);
-      // Redirect to the tutorials page or handle as needed
-    })
-    .catch((e: Error) => {
-      console.log(e);
-    });
-}
-
+    ApiService.deleteTutorial(currentTutorial.id)
+      .then(() => {
+        // Handle successful deletion, e.g., redirect or update state
+      })
+      .catch((error) => {
+        console.error(`Error deleting tutorial with ID ${currentTutorial.id}:`, error);
+      });
+  }
 
   render() {
     const { currentTutorial } = this.state;
@@ -161,3 +139,5 @@ deleteTutorial() {
     );
   }
 }
+
+export default Tutorial;

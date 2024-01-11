@@ -1,34 +1,75 @@
-import http from "../http-common";
-import ITutorialData from "../types/tutorial.type"
+import axios from 'axios';
+import ITutorialData from "../types/tutorial.type";
 
-class TutorialDataService {
-  getAll() {
-    return http.get<Array<ITutorialData>>("/tutorials");
-  }
+const API_BASE_URL = 'http://localhost:3000'; // Set your Rails API base URL here
 
-  get(id: string) {
-    return http.get<ITutorialData>(`/tutorials/${id}`);
-  }
+const ApiService = {
+  getAllTutorials: async (): Promise<Array<ITutorialData>> => {
+    try {
+      const response = await axios.get<Array<ITutorialData>>(`${API_BASE_URL}/tutorials`, { withCredentials: true });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching tutorials:', error);
+      throw error;
+    }
+  },
 
-  create(data: ITutorialData) {
-    return http.post<ITutorialData>("/tutorials", data);
-  }
+  getTutorialById: async (id: string): Promise<ITutorialData> => {
+    try {
+      const response = await axios.get<ITutorialData>(`${API_BASE_URL}/tutorials/${id}`, { withCredentials: true });
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching tutorial with ID ${id}:`, error);
+      throw error;
+    }
+  },
 
-  update(data: ITutorialData, id: any) {
-    return http.put<any>(`/tutorials/${id}`, data);
-  }
+  createTutorial: async (data: ITutorialData): Promise<ITutorialData> => {
+    try {
+      const response = await axios.post<ITutorialData>(`${API_BASE_URL}/users`, data, { withCredentials: true });
+      return response.data;
+    } catch (error) {
+      console.error('Error creating tutorial:', error);
+      throw error;
+    }
+  },
 
-  delete(id: any) {
-    return http.delete<any>(`/tutorials/${id}`);
-  }
+  updateTutorial: async (id: string, data: ITutorialData): Promise<void> => {
+    try {
+      await axios.put(`${API_BASE_URL}/tutorials/${id}`, data, { withCredentials: true });
+    } catch (error) {
+      console.error(`Error updating tutorial with ID ${id}:`, error);
+      throw error;
+    }
+  },
 
-  deleteAll() {
-    return http.delete<any>(`/tutorials`);
-  }
+  deleteTutorial: async (id: string): Promise<void> => {
+    try {
+      await axios.delete(`${API_BASE_URL}/tutorials/${id}`, { withCredentials: true });
+    } catch (error) {
+      console.error(`Error deleting tutorial with ID ${id}:`, error);
+      throw error;
+    }
+  },
 
-  findByTitle(title: string) {
-    return http.get<Array<ITutorialData>>(`/tutorials?title=${title}`);
-  }
-}
+  deleteAllTutorials: async (): Promise<void> => {
+    try {
+      await axios.delete(`${API_BASE_URL}/tutorials`, { withCredentials: true });
+    } catch (error) {
+      console.error('Error deleting all tutorials:', error);
+      throw error;
+    }
+  },
 
-export default new TutorialDataService();
+  findByTitle: async (title: string): Promise<Array<ITutorialData>> => {
+    try {
+      const response = await axios.get<Array<ITutorialData>>(`${API_BASE_URL}/tutorials?title=${title}`, { withCredentials: true });
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching tutorials with title ${title}:`, error);
+      throw error;
+    }
+  },
+};
+
+export default ApiService;

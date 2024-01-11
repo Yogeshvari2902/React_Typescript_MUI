@@ -1,62 +1,56 @@
-import { Component, ChangeEvent } from "react";
-import TutorialDataService from "../services/tutorial.service"
+import React, { ChangeEvent, Component } from "react";
+import ApiService from "../services/tutorial.service";
 import ITutorialData from "../types/tutorial.type";
 
 type Props = {};
 
 type State = ITutorialData & {
-  submitted: boolean
+  submitted: boolean;
 };
 
-export default class AddTutorial extends Component<Props, State> {
+class AddTutorial extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.onChangeTitle = this.onChangeTitle.bind(this);
-    this.onChangeDescription = this.onChangeDescription.bind(this);
-    this.saveTutorial = this.saveTutorial.bind(this);
-    this.newTutorial = this.newTutorial.bind(this);
-
     this.state = {
       id: null,
       title: "",
       description: "",
-      published: false,
+      // published: false,
       submitted: false
     };
   }
 
-  onChangeTitle(e: ChangeEvent<HTMLInputElement>) {
+  onChangeTitle = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      title: e.target.value
+      title: e.target.value,
     });
-  }
+  };
 
-  onChangeDescription(e: ChangeEvent<HTMLInputElement>) {
+  onChangeDescription = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      description: e.target.value
+      description: e.target.value,
     });
-  }
+  };
 
   saveTutorial() {
     const data: ITutorialData = {
       title: this.state.title,
-      description: this.state.description
+      description: this.state.description,
     };
-    // console.log(data)
 
-    TutorialDataService.create(data)
-      .then((response: any) => {
+    ApiService.createTutorial(data)
+      .then((response: ITutorialData) => {
         this.setState({
-          id: response.data.id,
-          title: response.data.title,
-          description: response.data.description,
-          published: response.data.published,
-          submitted: true
+          id: response.id,
+          title: response.title,
+          description: response.description,
+          // published: response.published,
+          submitted: true,
         });
-        console.log(response.data);
+        console.log(response);
       })
-      .catch((e: Error) => {
-        console.log(e);
+      .catch((error) => {
+        console.error("Error creating tutorial:", error);
       });
   }
 
@@ -64,9 +58,9 @@ export default class AddTutorial extends Component<Props, State> {
     this.setState({
       id: null,
       title: "",
-      description: "",
-      published: false,
-      submitted: false
+      description: ""
+      // published: false,
+      // submitted: false,
     });
   }
 
@@ -78,7 +72,7 @@ export default class AddTutorial extends Component<Props, State> {
         {submitted ? (
           <div>
             <h4>You submitted successfully!</h4>
-            <button className="btn btn-success" onClick={this.newTutorial}>
+            <button className="btn btn-success" onClick={() => this.newTutorial()}>
               Add
             </button>
           </div>
@@ -92,7 +86,7 @@ export default class AddTutorial extends Component<Props, State> {
                 id="title"
                 required
                 value={title}
-                onChange={this.onChangeTitle}
+                onChange={(e) => this.onChangeTitle(e)}
                 name="title"
               />
             </div>
@@ -105,12 +99,12 @@ export default class AddTutorial extends Component<Props, State> {
                 id="description"
                 required
                 value={description}
-                onChange={this.onChangeDescription}
+                onChange={(e) => this.onChangeDescription(e)}
                 name="description"
               />
             </div>
 
-            <button onClick={this.saveTutorial} className="btn btn-success">
+            <button onClick={() => this.saveTutorial()} className="btn btn-success">
               Submit
             </button>
           </div>
@@ -119,3 +113,5 @@ export default class AddTutorial extends Component<Props, State> {
     );
   }
 }
+
+export default AddTutorial;
