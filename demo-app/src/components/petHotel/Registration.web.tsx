@@ -1,25 +1,44 @@
 import React from "react";
-import Grid from '@mui/material/Grid'; 
 import RegistrationController from './RegistrationController.web'
-import { TextField, Typography } from "@mui/material";
+import { TextField, Typography, Checkbox, Grid, InputAdornment, withStyles } from "@material-ui/core";
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { styles } from "../CreateCustomer.web";
+import { colors } from "@mui/material";
 
-
-const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#ffcc',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-  }));
-  const gridStyle = {
+const CssTextField = withStyles({
+    root: {
+      
+      '& .MuiInput-underline:after': {
+        borderBottomColor: '#54A7C9',
+      },
+      '& .MuiOutlinedInput-root': {
+        '& fieldset': {
+          borderColor: '#CBD5E1',
+          borderRadius:"8px"
+        },
+        
+        '&.Mui-focused fieldset': {
+          borderColor: '#54A7C9',
+          borderWidth:"2px",
+          borderRadius:"8px"
+        },
+      },
+    },
+  })(TextField);
+const gridStyle = {
     backgroundColor: 'lightblue'
-  };
+};
 export class Registration extends RegistrationController{
     render () {
+        const {
+            confirmPassword,
+            checkboxTrue,
+            showPassword,
+            showYourPassword,
+        }=this.state
+
         return(
             <>
                 <Typography>Hello register</Typography>
@@ -31,18 +50,58 @@ export class Registration extends RegistrationController{
                                     <Typography variant="h5" style={styless.head as React.CSSProperties}>
                                         Welcome to Pet Hotel
                                     </Typography>
-                                    <TextField label="Enter Email"  error id="filled-error">
+                                    <label style={styless.labelsEmailPassword as React.CSSProperties}>
                                         Email
-                                    </TextField>
-                                    <br/>
-                                    <TextField label="Enter Password">
+                                    </label>
+                                    <br />
+                                    <CssTextField
+                                        style={styless.inputEmailPassword as React.CSSProperties}
+                                        type="email"
+                                        placeholder="   Your email"
+                                        variant="outlined"
+                                        data-test-id="email-change"
+                                    />
+                                     <label style={styless.labelsEmailPassword as React.CSSProperties}>
                                         Password
-                                    </TextField>
-                                    <br/>
-                                    <TextField label="Confirm Password">
+                                    </label>
+                                    <br />
+                                    <CssTextField
+                                        style={styless.inputEmailPassword as React.CSSProperties}
+                                        type="password"
+                                        placeholder="   Your Password"
+                                        variant="outlined"
+                                        data-test-id="-password_change"
+                                    />
+                                     <label style={styless.labelsEmailPassword as React.CSSProperties}>
                                         Confirm Password
-                                    </TextField>
-                                    <br/>
+                                    </label>
+                                    <br />
+                                    <CssTextField
+                                        style={styless.inputEmailPassword as React.CSSProperties}
+                                        type="password"
+                                        placeholder="   Confirm Password"
+                                        variant="outlined"
+                                        data-test-id="confirm_password"
+                                    />
+                                    <div>
+                                        <Checkbox
+                                        data-test-id="checkBoxCheck"
+                                        checked={checkboxTrue}
+                                        inputProps={{ "aria-label": "checkbox with default color" }}
+                                        color="default"
+                                        />
+                                        <label
+                                            style={{
+                                                color:"#64748B",
+                                                font:"inter",
+                                                fontFamily:"inter",
+                                                textTransform:"none"
+                                            }}
+                                        >
+                                            I agree {" "}
+                                            <span>Privacy Policy</span>
+                                        </label>
+                                    </div>
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -73,5 +132,21 @@ const styless = {
       font: "inter",
       textTransform: "none",
       fontFamily: "inter",
-    }
+    },
+    labelsEmailPassword: {
+        color: "#334155",
+        fontWeight: 700,
+        font: "inter",
+        textTransform: "none",
+        fontFamily: "inter",
+    },
+    inputEmailPassword: {
+        width: "100%",
+        height: "40px",
+        marginBottom: "40px",
+        borderRadius: "5px",
+        fontSize: "14px",
+        marginTop: "5px",
+        fontWeight: 400,
+      },
   };

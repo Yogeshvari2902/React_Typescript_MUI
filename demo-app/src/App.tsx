@@ -6,6 +6,7 @@ import "./App.css";
 import AddTutorial from "./components/AddTutorials";
 import TutorialsList from "./components/TutorialList";
 import TutorialWrapper from "./components/TutorialWrappers";
+import { Registration } from "./components/petHotel/Registration.web";
 
 class App extends Component {
   render() {
@@ -27,6 +28,11 @@ class App extends Component {
                   Add
                 </Link>
               </li>
+              <li className="nav-item">
+                <Link to={"/register"} className="nav-link">
+                  Register
+                </Link>
+              </li>
             </div>
           </nav>
 
@@ -36,6 +42,7 @@ class App extends Component {
               <Route path="/tutorials" element={<TutorialsList />} />
               <Route path="/add" element={<AddTutorial />} />
               <Route path="/tutorials/:id" element={<TutorialWrapper />} />
+              <Route path="/register" element={<Registration />} />
             </Routes>
           </div>
         </div>
